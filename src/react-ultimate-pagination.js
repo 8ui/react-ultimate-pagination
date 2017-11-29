@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import {getPaginationModel, ITEM_TYPES} from 'ultimate-pagination';
 
-const renderItemComponentFunctionFactory = (itemTypeToComponent, currentPage, onChange) => {
+const renderItemComponentFunctionFactory = (itemTypeToComponent, currentPage, onChange, itemProps) => {
   const onItemClickFunctionFactory = (value) => {
     return () => {
       if (onChange && currentPage !== value) {
@@ -14,7 +14,7 @@ const renderItemComponentFunctionFactory = (itemTypeToComponent, currentPage, on
   return (item) => {
     const ItemComponent = itemTypeToComponent[item.type];
     const onItemClick = onItemClickFunctionFactory(item.value);
-    return <ItemComponent onClick={onItemClick} {...item}/>;
+    return <ItemComponent onClick={onItemClick} {...item} {...itemProps}/>;
   }
 };
 
@@ -28,7 +28,8 @@ export const createUltimatePagination = ({itemTypeToComponent, WrapperComponent 
       hideEllipsis,
       hidePreviousAndNextPageLinks,
       hideFirstAndLastPageLinks,
-      onChange
+      onChange,
+      item
     } = props;
 
     const paginationModel = getPaginationModel({
@@ -40,7 +41,7 @@ export const createUltimatePagination = ({itemTypeToComponent, WrapperComponent 
       hidePreviousAndNextPageLinks,
       hideFirstAndLastPageLinks
     });
-    const renderItemComponent = renderItemComponentFunctionFactory(itemTypeToComponent, currentPage, onChange);
+    const renderItemComponent = renderItemComponentFunctionFactory(itemTypeToComponent, currentPage, onChange, item);
     return <WrapperComponent>{paginationModel.map(renderItemComponent)}</WrapperComponent>;
   };
 
@@ -52,7 +53,12 @@ export const createUltimatePagination = ({itemTypeToComponent, WrapperComponent 
     hideEllipsis: PropTypes.bool,
     hidePreviousAndNextPageLinks: PropTypes.bool,
     hideFirstAndLastPageLinks: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    item: PropTypes.object,
+  };
+
+  UltimatePaginationComponent.defaultProps = {
+    item: {},
   };
 
   return UltimatePaginationComponent;
